@@ -14,5 +14,24 @@ func Init() {
 		os.Exit(1)
 	}
 
-	fmt.Println(".gogit created successfully")
+	var sha1_dir string = ".gogit/objects"
+	err = os.Mkdir(sha1_dir, 0700)
+	if err != nil && !os.IsExist(err){
+		fmt.Fprintf(os.Stderr, sha1_dir)
+		log.Fatal(err)
+		os.Exit(1)
+	}
+
+	for i := 0; i < 256; i++ {
+		hex_digits := fmt.Sprintf("%02x", i)
+		path := sha1_dir + "/" + hex_digits
+		err := os.Mkdir(path, 0700)
+		if err != nil && !os.IsExist(err){
+			fmt.Fprintf(os.Stderr, path)
+			log.Fatal(err)
+			os.Exit(1)
+		}
+	}
+
+	fmt.Println("gogit repo intialized successfully")
 }
