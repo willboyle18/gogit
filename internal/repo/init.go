@@ -11,7 +11,6 @@ func Init() {
 	if err != nil && !os.IsExist(err) {
 		fmt.Fprintln(os.Stderr, "unable to create .gogit")
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	var sha1_dir string = ".gogit/objects"
@@ -19,7 +18,6 @@ func Init() {
 	if err != nil && !os.IsExist(err){
 		fmt.Fprintf(os.Stderr, sha1_dir)
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	for i := 0; i < 256; i++ {
@@ -29,7 +27,6 @@ func Init() {
 		if err != nil && !os.IsExist(err){
 			fmt.Fprintf(os.Stderr, path)
 			log.Fatal(err)
-			os.Exit(1)
 		}
 	}
 
