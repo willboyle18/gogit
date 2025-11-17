@@ -6,9 +6,8 @@ import (
 )
 
 func Run(args []string){
+	fmt.Println("parsing arguments")
 	if args[1] == "init"{
-		fmt.Println("Calling repo.init")
 		repo.Init()
-		fmt.Println("done");
 	}
 }
