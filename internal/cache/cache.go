@@ -31,3 +31,10 @@ type CacheEntry struct {
 	Namelen uint16
 	Name string
 }
+
+func Cache_Entry_Size(filename_length int) int {
+	fixed_size := 8 + 8 + 4 + 4 + 4 + 4 + 4 + 4 + 20 + 2
+	raw_entry_size := fixed_size + filename_length
+	cache_entry_size := (raw_entry_size + 8) &^ 7
+	return cache_entry_size
+}
