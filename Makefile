@@ -9,6 +9,16 @@ build:
 init: build
 	@cd ${TEST_DIRECTORY} && ../target/${BINARY_NAME}-${OPERATING_SYSTEM} init
 
+
+add: build
+	@cd ${TEST_DIRECTORY} && ../target/${BINARY_NAME}-${OPERATING_SYSTEM} ${ARGS}
+
+
+ARGS := $(filter-out $@,$(MAKECMDGOALS))
+
+%:
+	@:
+
 clean:
 	@go clean
 	@rm target/${BINARY_NAME}-${OPERATING_SYSTEM}
