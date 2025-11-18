@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"github.com/willboyle18/gogit/internal/cache"
 )
 
-func Verify_Path(path string) bool {
+func verify_path(path string) bool {
 	if path[0] == '/'{ return false }
 	i := 0
 	length := len(path)
@@ -23,6 +24,10 @@ func Verify_Path(path string) bool {
 		i += 1
 	}
 	return true
+}
+
+func Add_File_To_Cache(path string) int {
+
 }
 
 func Add(args []string){
@@ -44,13 +49,14 @@ func Add(args []string){
 	for i := 2; i < len(args); i++{
 		// Block 4: Verify the path
 		path := args[i]
-		verified := Verify_Path(path)
+		verified := verify_path(path)
 		if !verified{
 			fmt.Fprintf(os.Stderr, "ignoring path " + path)
 			continue
 		}
 
 		// Block 5: Add the file to the index
+
 	}
 	// Block 6: Write the new index
 	fmt.Println("finished parsing paths")
