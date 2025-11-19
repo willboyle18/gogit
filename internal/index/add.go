@@ -27,13 +27,15 @@ func verify_path(path string) bool {
 }
 
 func Add_File_To_Cache(path string) int {
-
+	return 0
 }
 
 func Add(args []string){
 	fmt.Println(args)
 
 	// Block 1: Load the existing index (we can skip for now because we are assuming the cache is empty for now)
+	entries := cache.Read_Cache()
+	fmt.Println(entries)
 
 	// Block 2: Create .gogit/index.lock
 	new_fd, err := os.Create(".gogit/index.lock")
