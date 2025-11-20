@@ -21,24 +21,23 @@ type CacheTime struct {
 type CacheEntry struct {
 	Ctime CacheTime
 	Mtime CacheTime
-	StDev uint32
-	StIno uint32
-	StMode uint32
-	StUid uint32
-	StGid uint32
-	StSize uint32
+	Dev uint32
+	Ino uint32
+	Mode uint32
+	Uid uint32
+	Gid uint32
+	Size uint32
 	Sha1 [20]byte
-	Namelen uint16
 	Name string
 }
 
 func Cache_Entry_Size(filename_length int) int {
-	fixed_size := 8 + 8 + 4 + 4 + 4 + 4 + 4 + 4 + 20 + 2
+	fixed_size := 8 + 8 + 4 + 4 + 4 + 4 + 4 + 4 + 20
 	raw_entry_size := fixed_size + filename_length
-	cache_entry_size := (raw_entry_size + 8) &^ 7
+	cache_entry_size := (raw_entry_size + 7) &^ 7
 	return cache_entry_size
 }
 
-var ActiveCache []*CacheEntry
+var ActiveCache []*CacheEntry // correct
 var ActiveNR uint32
 var ActiveAlloc uint32

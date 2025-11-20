@@ -39,7 +39,7 @@ func Read_Cache() int {
 	}
 
 	// Block 4: Open the index file
-	fd, err := os.Open(".gogit/index")
+	_, err = os.Open(".gogit/index")
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist){
 			return 0;
@@ -47,4 +47,6 @@ func Read_Cache() int {
 			log.Fatal(err)
 		}
 	}
+
+	return 0
 }

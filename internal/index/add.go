@@ -27,10 +27,14 @@ func verify_path(path string) bool {
 	return true
 }
 
-func index_fd(path string, name_length uint32, cache_entry cache.CacheEntry, fd *os.FileInfo, 
+func index_fd(path string, name_length int, cache_entry *cache.CacheEntry, fd *os.File, stats *syscall.Stat_t) int {
+	// TODO: implement later
+	return 0
+}
 
-func add_cache_entry(cache_entry cache.CacheEntry){
-	return
+func add_cache_entry(cache_entry *cache.CacheEntry) bool {
+	// TODO: implement later
+	return true
 }
 
 func add_file_to_cache(path string) bool {
@@ -51,8 +55,8 @@ func add_file_to_cache(path string) bool {
 
 	// Block 3: Allocate a cache_entry struct
 	name_length := len(path)
-	size := cache.Cache_Entry_Size(name_length)
-	var cache_entry cache.CacheEntry
+	// size := cache.Cache_Entry_Size(name_length)
+	cache_entry := &cache.CacheEntry{}
 	cache_entry.Name = path
 
 	// Block 4: Fill metadata
@@ -61,17 +65,16 @@ func add_file_to_cache(path string) bool {
 	cache_entry.Ctime.Nsec = uint32(stats.Ctim.Nsec)
 	cache_entry.Mtime.Sec = uint32(stats.Mtim.Sec)
 	cache_entry.Mtime.Nsec = uint32(stats.Mtim.Nsec)
-	cache_entry.StDev = uint32(stats.Dev)
-	cache_entry.StIno = uint32(stats.Ino)
-	cache_entry.StMode = uint32(stats.Mode)
-	cache_entry.StUid = stats.Uid
-	cache_entry.StGid = stats.Gid
-	cache_entry.StSize = uint32(stats.Size)
-	cache_entry.Namelen = uint16(name_length)
+	cache_entry.Dev = uint32(stats.Dev)
+	cache_entry.Ino = uint32(stats.Ino)
+	cache_entry.Mode = uint32(stats.Mode)
+	cache_entry.Uid = uint32(stats.Uid)
+	cache_entry.Gid = uint32(stats.Gid)
+	cache_entry.Size = uint32(stats.Size)
 
 	// Block 5: Process file contents, compute SHA-1, write blob object
 	if(index_fd(path, name_length, cache_entry, fd, stats) < 0){
-		return -1
+		return false
 	}
 
 	// Block 6: Insert cache entry into the in-memory index
