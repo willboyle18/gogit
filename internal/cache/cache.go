@@ -1,8 +1,8 @@
 package cache
 
 import (
-	"crypto/sha1"
-	"compress/zlib"
+	// "crypto/sha1"
+	// "compress/zlib"
 )
 
 const CACHE_SIGNATURE uint32 = 0x44495243 /* DIRC */
@@ -38,3 +38,7 @@ func Cache_Entry_Size(filename_length int) int {
 	cache_entry_size := (raw_entry_size + 8) &^ 7
 	return cache_entry_size
 }
+
+var ActiveCache []*CacheEntry
+var ActiveNR uint32
+var ActiveAlloc uint32

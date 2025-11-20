@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"syscall"
 	"github.com/willboyle18/gogit/internal/cache"
 )
 
@@ -26,8 +27,55 @@ func verify_path(path string) bool {
 	return true
 }
 
-func Add_File_To_Cache(path string) int {
-	return 0
+func index_fd(path string, name_length uint32, cache_entry cache.CacheEntry, fd *os.FileInfo, 
+
+func add_cache_entry(cache_entry cache.CacheEntry){
+	return
+}
+
+func add_file_to_cache(path string) bool {
+	// Block 1: Open the file
+	fd, err := os.Open(path)
+	if err != nil{
+		// In future write a method to remove from the cache remove_file_from_cache(path)
+		log.Fatal(err)
+	}
+	defer fd.Close()
+
+
+	// Block 2: Stat the file
+	info, err := fd.Stat()
+	if err != nil{
+		log.Fatal(err)
+	}
+
+	// Block 3: Allocate a cache_entry struct
+	name_length := len(path)
+	size := cache.Cache_Entry_Size(name_length)
+	var cache_entry cache.CacheEntry
+	cache_entry.Name = path
+
+	// Block 4: Fill metadata
+	stats := info.Sys().(*syscall.Stat_t)
+	cache_entry.Ctime.Sec = uint32(stats.Ctim.Sec)
+	cache_entry.Ctime.Nsec = uint32(stats.Ctim.Nsec)
+	cache_entry.Mtime.Sec = uint32(stats.Mtim.Sec)
+	cache_entry.Mtime.Nsec = uint32(stats.Mtim.Nsec)
+	cache_entry.StDev = uint32(stats.Dev)
+	cache_entry.StIno = uint32(stats.Ino)
+	cache_entry.StMode = uint32(stats.Mode)
+	cache_entry.StUid = stats.Uid
+	cache_entry.StGid = stats.Gid
+	cache_entry.StSize = uint32(stats.Size)
+	cache_entry.Namelen = uint16(name_length)
+
+	// Block 5: Process file contents, compute SHA-1, write blob object
+	if(index_fd(path, name_length, cache_entry, fd, stats) < 0){
+		return -1
+	}
+
+	// Block 6: Insert cache entry into the in-memory index
+	return add_cache_entry(cache_entry)
 }
 
 func Add(args []string){
@@ -35,7 +83,9 @@ func Add(args []string){
 
 	// Block 1: Load the existing index (we can skip for now because we are assuming the cache is empty for now)
 	entries := cache.Read_Cache()
-	fmt.Println(entries)
+	if entries < 0 {
+		fmt.Fprintf(os.Stderr, "Cache currupted")
+	}
 
 	// Block 2: Create .gogit/index.lock
 	new_fd, err := os.Create(".gogit/index.lock")
@@ -58,6 +108,9 @@ func Add(args []string){
 		}
 
 		// Block 5: Add the file to the index
+		if add_file_to_cache(path) {
+
+		}
 
 	}
 	// Block 6: Write the new index
