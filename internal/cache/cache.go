@@ -39,5 +39,5 @@ func Cache_Entry_Size(filename_length int) int {
 }
 
 var ActiveCache []*CacheEntry // correct
-var ActiveNR uint32
+var ActiveNR int
 var ActiveAlloc uint32

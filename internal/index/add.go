@@ -42,7 +42,6 @@ func verify_path(path string) bool {
 }
 
 func index_fd(path string, name_length int, cache_entry *cache.CacheEntry, fd *os.File, stats *syscall.Stat_t) int {
-	fmt.Println("We are now in index_fd")
 	data, err := io.ReadAll(fd) // Reads all the data into a buffer
 	if err != nil {
 		return -1
@@ -109,7 +108,13 @@ func index_fd(path string, name_length int, cache_entry *cache.CacheEntry, fd *o
 
 func add_cache_entry(cache_entry *cache.CacheEntry) bool {
 	// TODO: implement later
+	cache.ActiveNR += 1
+	cache.ActiveCache = append(cache.ActiveCache, cache_entry)
 	return true
+}
+
+func write_cache(new_fd *os.File, active_cache []*cache.CacheEntry, entries int){
+
 }
 
 func add_file_to_cache(path string) bool {
@@ -151,8 +156,6 @@ func add_file_to_cache(path string) bool {
 		return false
 	}
 
-	fmt.Println("we got past the add_cache_entry")
-
 	// Block 6: Insert cache entry into the in-memory index
 	return add_cache_entry(cache_entry)
 }
@@ -162,7 +165,6 @@ func Add(args []string) {
 
 	// Block 1: Load the existing index (we can skip for now because we are assuming the cache is empty for now)
 	entries := cache.Read_Cache()
-	entries = 0
 	if entries < 0 {
 		fmt.Fprintf(os.Stderr, "Cache currupted")
 	}
@@ -196,7 +198,9 @@ func Add(args []string) {
 
 	}
 	// Block 6: Write the new index
-	fmt.Println("finished parsing paths")
-
-	// Block 7: Cleanup on failure
+	write_cache(new_fd, cache.ActiveCache, cache.ActiveNR)
+	err = os.Rename(".gogit/index.lock", ".gogit/index")
+	if err != nil{
+		log.Fatal(err)
+	}
 }
