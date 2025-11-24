@@ -71,13 +71,22 @@ func cache_name_compare(name1 string, name2 string) int {
 
 func cache_name_pos(name string) int {
 	first := 0
-	last := cache.ActiveNR
+	last := int(cache.ActiveNR)
 
 	for first < last {
 		next := (first + last) >> 1
 		cache_entry := cache.ActiveCache[next]
 		cmp := cache_name_compare(name, cache_entry.Name)
+		if cmp == 0 {
+			return -next-1
+		}
+		if cmp < 0 {
+			last = next
+			continue
+		}
+		first = next + 1
 	}
+	return first
 }
 
 func index_fd(path string, name_length int, cache_entry *cache.CacheEntry, fd *os.File, stats *syscall.Stat_t) int {
