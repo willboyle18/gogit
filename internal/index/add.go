@@ -154,11 +154,19 @@ func index_fd(path string, name_length int, cache_entry *cache.CacheEntry, fd *o
 	return 0
 }
 
-func add_cache_entry(cache_entry *cache.CacheEntry) bool {
-	// TODO: implement later
-	cache.ActiveNR += 1
-	cache.ActiveCache = append(cache.ActiveCache, cache_entry)
-	return true
+func add_cache_entry(cache_entry *cache.CacheEntry) int {
+	pos := cache_name_pos(cache_entry.Name)
+
+	if pos < 0 {
+		cache.ActiveCache[-pos-1] = cache_entry
+		return 0
+	}
+
+	cache.ActiveNR++
+	cache.ActiveCache = append(cache.ActiveCache, nil)
+	copy(cache.ActiveCache[pos+1:], cache.ActiveCache[pos:])
+	cache.ActiveCache[pos] = cache_entry
+	return 0
 }
 
 func write_cache(new_fd *os.File, active_cache []*cache.CacheEntry, entries int){
