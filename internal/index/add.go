@@ -41,6 +41,45 @@ func verify_path(path string) bool {
 	return true
 }
 
+func cache_name_compare(name1 string, name2 string) int {
+	len1 := len(name1)
+	len2 := len(name2)
+
+	var min_len int
+	if len1 < len2{
+		min_len = len1
+	} else{
+		min_len = len2
+	}
+
+	for i := 0; i < min_len ; i++ {
+		if name1[i] < name2[i]{
+			return -1
+		} else if name2[i] < name1[i]{
+			return 1
+		} else{
+			continue
+		}
+	}
+	if len1 < len2 {
+		return -1
+	} else if len2 < len1 {
+		return 1
+	}
+	return 0
+}
+
+func cache_name_pos(name string) int {
+	first := 0
+	last := cache.ActiveNR
+
+	for first < last {
+		next := (first + last) >> 1
+		cache_entry := cache.ActiveCache[next]
+		cmp := cache_name_compare(name, cache_entry.Name)
+	}
+}
+
 func index_fd(path string, name_length int, cache_entry *cache.CacheEntry, fd *os.File, stats *syscall.Stat_t) int {
 	data, err := io.ReadAll(fd) // Reads all the data into a buffer
 	if err != nil {
@@ -114,7 +153,7 @@ func add_cache_entry(cache_entry *cache.CacheEntry) bool {
 }
 
 func write_cache(new_fd *os.File, active_cache []*cache.CacheEntry, entries int){
-
+	// TODO: implement later
 }
 
 func add_file_to_cache(path string) bool {
