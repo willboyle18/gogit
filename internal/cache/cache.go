@@ -32,7 +32,7 @@ type CacheEntry struct {
 }
 
 func Cache_Entry_Size(filename_length int) int {
-	fixed_size := 8 + 8 + 4 + 4 + 4 + 4 + 4 + 4 + 20
+	fixed_size := 8 + 8 + 4 + 4 + 4 + 4 + 4 + 4 + + 2 + 20
 	raw_entry_size := fixed_size + filename_length
 	cache_entry_size := (raw_entry_size + 7) &^ 7
 	return cache_entry_size

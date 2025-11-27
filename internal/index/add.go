@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"compress/zlib"
 	"crypto/sha1"
+	"encoding/binary"
 	"fmt"
 	"io"
 	"log"
 	"os"
-	"syscall"
 	"path/filepath"
+	"syscall"
 
 	"github.com/willboyle18/gogit/internal/cache"
 )
@@ -154,23 +155,71 @@ func index_fd(path string, name_length int, cache_entry *cache.CacheEntry, fd *o
 	return 0
 }
 
-func add_cache_entry(cache_entry *cache.CacheEntry) int {
+func add_cache_entry(cache_entry *cache.CacheEntry) bool {
 	pos := cache_name_pos(cache_entry.Name)
 
 	if pos < 0 {
 		cache.ActiveCache[-pos-1] = cache_entry
-		return 0
+		return true
 	}
 
 	cache.ActiveNR++
 	cache.ActiveCache = append(cache.ActiveCache, nil)
 	copy(cache.ActiveCache[pos+1:], cache.ActiveCache[pos:])
 	cache.ActiveCache[pos] = cache_entry
-	return 0
+	return true
 }
 
-func write_cache(new_fd *os.File, active_cache []*cache.CacheEntry, entries int){
-	// TODO: implement later
+
+func write_cache(new_fd *os.File){
+	var cache_header cache.CacheHeader
+
+	cache_header.Signature = cache.CACHE_SIGNATURE
+	cache_header.Version = 1
+	cache_header.Entries = uint32(cache.ActiveNR)
+
+	hasher := sha1.New()
+	buffer := new(bytes.Buffer)
+	err := binary.Write(buffer, binary.BigEndian, cache_header.Signature)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = binary.Write(buffer, binary.BigEndian, cache_header.Version)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = binary.Write(buffer, binary.BigEndian, cache_header.Entries)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = hasher.Write(buffer.Bytes())
+	if err != nil{
+		log.Fatal(err)
+	}
+
+	_, err = new_fd.Write(buffer.Bytes())
+	if err != nil{
+		log.Fatal(err)
+	}
+
+	for i := 0; i < int(cache.ActiveNR); i++ {
+		raw_entry_bytes := turn_cache_entry_into_raw_bytes(cache.ActiveCache[i])
+		_, err = hasher.Write(raw_entry_bytes)
+		if err != nil{
+			log.Fatal(err)
+		}
+		_, err = new_fd.Write(raw_entry_bytes)
+		if err != nil{
+			log.Fatal(err)
+		}
+	}
+
+	final := hasher.Sum(nil)
+	copy(cache_header.Sha1[:], final)
+	_, err = new_fd.Write(cache_header.Sha1[:])
+	if err != nil{
+		log.Fatal(err)
+	}
 }
 
 func add_file_to_cache(path string) bool {
@@ -253,8 +302,9 @@ func Add(args []string) {
 		}
 
 	}
+
 	// Block 6: Write the new index
-	write_cache(new_fd, cache.ActiveCache, cache.ActiveNR)
+	write_cache(new_fd)
 	err = os.Rename(".gogit/index.lock", ".gogit/index")
 	if err != nil{
 		log.Fatal(err)
