@@ -178,8 +178,11 @@ func write_cache(new_fd *os.File){
 	cache_header.Version = 1
 	cache_header.Entries = uint32(cache.ActiveNR)
 
+	// Initialize the SHA1 hasher
 	hasher := sha1.New()
 	buffer := new(bytes.Buffer)
+
+	// Write the first 12 header bytes to the hasher
 	err := binary.Write(buffer, binary.BigEndian, cache_header.Signature)
 	if err != nil {
 		log.Fatal(err)
@@ -197,28 +200,38 @@ func write_cache(new_fd *os.File){
 		log.Fatal(err)
 	}
 
-	_, err = new_fd.Write(buffer.Bytes())
-	if err != nil{
-		log.Fatal(err)
-	}
-
+	// Add entires to SHA1 hasher
 	for i := 0; i < int(cache.ActiveNR); i++ {
 		raw_entry_bytes := turn_cache_entry_into_raw_bytes(cache.ActiveCache[i])
 		_, err = hasher.Write(raw_entry_bytes)
 		if err != nil{
 			log.Fatal(err)
 		}
+	}
+
+	// Compute SHA1
+	final := hasher.Sum(nil)
+	copy(cache_header.Sha1[:], final)
+
+	// Write SHA1 to the buffer
+	err = binary.Write(buffer, binary.BigEndian, cache_header.Sha1[:])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Write header to the index file
+	_, err = new_fd.Write(buffer.Bytes())
+	if err != nil{
+		log.Fatal(err)
+	}
+
+	// Write file entry bytes to the index
+	for i := 0; i < int(cache.ActiveNR); i++{
+		raw_entry_bytes := turn_cache_entry_into_raw_bytes(cache.ActiveCache[i])
 		_, err = new_fd.Write(raw_entry_bytes)
 		if err != nil{
 			log.Fatal(err)
 		}
-	}
-
-	final := hasher.Sum(nil)
-	copy(cache_header.Sha1[:], final)
-	_, err = new_fd.Write(cache_header.Sha1[:])
-	if err != nil{
-		log.Fatal(err)
 	}
 }
 
