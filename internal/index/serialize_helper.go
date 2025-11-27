@@ -56,10 +56,6 @@ func turn_cache_entry_into_raw_bytes(cache_entry *cache.CacheEntry) []byte {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = binary.Write(buffer, binary.BigEndian, []byte(cache_entry.Name))
-	if err != nil{
-		log.Fatal(err)
-	}
 	buffer.Write([]byte(cache_entry.Name))
 
 	raw := buffer.Bytes()
