@@ -235,11 +235,26 @@ func write_cache(new_fd *os.File){
 	}
 }
 
+func remove_file_from_cache(path string){
+	pos := cache_name_pos(path)
+
+	// Deleted file needs to be removed from the active cache
+	if pos < 0 {
+		cache.ActiveCache = append(cache.ActiveCache[:-pos-1], cache.ActiveCache[-pos:]...)
+		fmt.Println("removed", path)
+		cache.ActiveNR--
+		return
+	}
+	fmt.Println("file does not exist")
+}
+
 func add_file_to_cache(path string) bool {
 	// Block 1: Open the file
 	fd, err := os.Open(path)
-	if err != nil {
-		// In future write a method to remove from the cache remove_file_from_cache(path)
+	if os.IsNotExist(err){
+		remove_file_from_cache(path)
+		return true
+	} else if err != nil {
 		log.Fatal(err)
 	}
 	defer fd.Close()
