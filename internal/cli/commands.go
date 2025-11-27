@@ -13,5 +13,7 @@ func Run(args []string){
 		repo.Init()
 	} else if args[1] == "add" {
 		index.Add(args)
+	} else if args[1] == "status" {
+		index.Status()
 	}
 }

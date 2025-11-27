@@ -244,7 +244,7 @@ func Add(args []string) {
 	for i := 2; i < len(args); i++ {
 		// Block 4: Verify the path
 		path := args[i]
-		verified := verify_path(path)
+		verified := verify_path(path) // located in add_helpers.go
 		if !verified {
 			fmt.Fprintf(os.Stderr, "ignoring path " + path +"\n")
 			continue

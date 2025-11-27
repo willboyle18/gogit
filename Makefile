@@ -9,6 +9,9 @@ build:
 init: build
 	@cd ${TEST_DIRECTORY} && ../target/${BINARY_NAME}-${OPERATING_SYSTEM} init
 
+status: build
+	@cd ${TEST_DIRECTORY} && ../target/${BINARY_NAME}-${OPERATING_SYSTEM} status
+
 
 add: build
 	@cd ${TEST_DIRECTORY} && ../target/${BINARY_NAME}-${OPERATING_SYSTEM} ${ARGS}
