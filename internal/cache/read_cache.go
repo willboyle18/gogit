@@ -1,13 +1,47 @@
 package cache
 
 import (
+	"bytes"
+	"encoding/binary"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 )
 
 var sha1_file_directory string
+
+func get_name(buffer *bytes.Reader, name_length uint16) []byte {
+	i := 0
+	var name []byte
+	for i < int(name_length) {
+		next_byte, err := buffer.ReadByte()
+		if err != nil {
+			log.Fatal(err)
+		}
+		name = append(name, next_byte)
+		i++
+	}
+
+	// Get through padding
+	for {
+		next_byte, err := buffer.ReadByte()
+		if err == io.EOF {
+			break
+		} else if err != nil{
+			log.Fatal(err)
+		}
+		if next_byte != 0x00 {
+			break
+		}
+	}
+	err := buffer.UnreadByte()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return name
+}
 
 func Read_Cache() int {
 
@@ -46,6 +80,44 @@ func Read_Cache() int {
 		} else {
 			log.Fatal(err)
 		}
+	}
+
+	data, err := os.ReadFile(".gogit/index")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var hdr CacheHeader
+	buffer := bytes.NewReader(data)
+	err = binary.Read(buffer, binary.BigEndian, &hdr)
+	if err != nil{
+		log.Fatal(err)
+	}
+
+	entries := int(hdr.Entries)
+
+	for i := 0; i < entries; i++ {
+		var entry CacheEntry
+
+		binary.Read(buffer, binary.BigEndian, &entry.Ctime.Sec)
+		binary.Read(buffer, binary.BigEndian, &entry.Ctime.Nsec)
+		binary.Read(buffer, binary.BigEndian, &entry.Mtime.Sec)
+		binary.Read(buffer, binary.BigEndian, &entry.Mtime.Nsec)
+		binary.Read(buffer, binary.BigEndian, &entry.Dev)
+		binary.Read(buffer, binary.BigEndian, &entry.Ino)
+		binary.Read(buffer, binary.BigEndian, &entry.Mode)
+		binary.Read(buffer, binary.BigEndian, &entry.Uid)
+		binary.Read(buffer, binary.BigEndian, &entry.Gid)
+		binary.Read(buffer, binary.BigEndian, &entry.Size)
+		binary.Read(buffer, binary.BigEndian, &entry.Sha1)
+		binary.Read(buffer, binary.BigEndian, &entry.Name_Length)
+
+		name := get_name(buffer, entry.Name_Length)
+
+		entry.Name = string(name)
+
+		ActiveCache = append(ActiveCache, &entry)
+		ActiveNR++
 	}
 
 	return 0

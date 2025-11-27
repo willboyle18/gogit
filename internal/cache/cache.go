@@ -28,6 +28,7 @@ type CacheEntry struct {
 	Gid uint32
 	Size uint32
 	Sha1 [20]byte
+	Name_Length uint16
 	Name string
 }
 
@@ -38,6 +39,6 @@ func Cache_Entry_Size(filename_length int) int {
 	return cache_entry_size
 }
 
-var ActiveCache []*CacheEntry // correct
+var ActiveCache []*CacheEntry
 var ActiveNR int
 var ActiveAlloc uint32

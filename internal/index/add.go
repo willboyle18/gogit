@@ -268,6 +268,7 @@ func add_file_to_cache(path string) bool {
 	cache_entry.Uid = uint32(stats.Uid)
 	cache_entry.Gid = uint32(stats.Gid)
 	cache_entry.Size = uint32(stats.Size)
+	cache_entry.Name_Length = uint16(len(path))
 
 	// Block 5: Process file contents, compute SHA-1, write blob object
 	if index_fd(path, name_length, cache_entry, fd, stats) < 0 {
@@ -296,6 +297,7 @@ func Add(args []string) {
 	if err := os.Chmod(".gogit/index.lock", 0600); err != nil {
 		log.Fatal(err)
 	}
+	defer new_fd.Close()
 
 	// Block 3: Loop over all paths passed on the command line
 	for i := 2; i < len(args); i++ {
@@ -313,7 +315,6 @@ func Add(args []string) {
 			os.Remove(".gogit/index.lock")
 			return
 		}
-
 	}
 
 	// Block 6: Write the new index
