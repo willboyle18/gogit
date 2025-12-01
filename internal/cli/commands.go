@@ -34,5 +34,7 @@ func Run(args []string){
 		commit.Commit(args[3])
 	} else if args[1] == "latest" {
 		commit.Latest()
+	} else if args[1] == "log" {
+		commit.Log()
 	}
 }
