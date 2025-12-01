@@ -75,7 +75,7 @@ func store_tree_object(tree_object []byte) (int, string) {
 
 func write_tree() string {
 	entries := cache.Read_Cache()
-	if entries <= 0 {
+	if entries < 0 {
 		fmt.Fprintf(os.Stderr, "No file-cache to create a tree of\n")
 		os.Exit(1)
 	}

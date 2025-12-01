@@ -31,20 +31,13 @@ func get_timestamp() string {
 }
 
 func Check_Message_Format(message string) string {
-	if message[0] != '"'{
+	if len(message) == 0{
 		return ""
 	}
 
-	if message[len(message) - 1] != '"'{
-		return ""
-	}
+	fmt.Println(message)
 
-	if len(message) == 2{
-		return ""
-	}
-
-	final_message := message[1:len(message) - 1]
-	return final_message
+	return message
 }
 
 func create_commit_object(message string, sha1_hex string) []byte {

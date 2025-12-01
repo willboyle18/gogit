@@ -11,6 +11,7 @@ import (
 
 func Run(args []string){
 	fmt.Println("parsing arguments")
+	fmt.Println(args)
 	if args[1] == "init"{
 		repo.Init()
 	} else if args[1] == "add" {
