@@ -17,6 +17,6 @@ func Run(args []string){
 	} else if args[1] == "status" {
 		index.Status()
 	} else if args[1] == "commit" {
-		commit.Commit()
+		commit.Commit(args)
 	}
 }

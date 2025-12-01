@@ -50,9 +50,9 @@ func index_fd(path string, name_length int, cache_entry *cache.CacheEntry, fd *o
 
 	compressed_bytes := compressed.Bytes()
 
-	shaHex := fmt.Sprintf("%x", sha1_sum)
-	dir := shaHex[:2]
-	file := shaHex[2:] 
+	sha_hex := fmt.Sprintf("%x", sha1_sum)
+	dir := sha_hex[:2]
+	file := sha_hex[2:] 
 	
 	object_dir := filepath.Join(".gogit", "objects", dir)
 
