@@ -27,11 +27,12 @@ func Run(args []string){
 			fmt.Fprintf(os.Stderr, "No commit message written\n")
 			os.Exit(1)
 		}
-		message := commit.Check_Message_Format(args[3])
-		if message == ""{
+		if args[3] == ""{
 			fmt.Fprintf(os.Stderr, "Incorrectly formatted commit message\n")
 			os.Exit(1)
 		}
-		commit.Commit(message)
+		commit.Commit(args[3])
+	} else if args[1] == "latest" {
+		commit.Latest()
 	}
 }

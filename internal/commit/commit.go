@@ -30,16 +30,6 @@ func get_timestamp() string {
 	return fmt.Sprintf("%d %s%02d%02d", seconds, sign, offset_hours, offset_minutes)
 }
 
-func Check_Message_Format(message string) string {
-	if len(message) == 0{
-		return ""
-	}
-
-	fmt.Println(message)
-
-	return message
-}
-
 func create_commit_object(message string, sha1_hex string) []byte {
 	buffer := new(bytes.Buffer)
 	buffer.WriteString(fmt.Sprintf("tree %s\n", sha1_hex))

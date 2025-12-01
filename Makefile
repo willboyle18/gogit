@@ -17,7 +17,13 @@ add: build
 	@cd ${TEST_DIRECTORY} && ../target/${BINARY_NAME}-${OPERATING_SYSTEM} ${ARGS}
 
 
+latest: build
+	@cd ${TEST_DIRECTORY} && ../target/${BINARY_NAME}-${OPERATING_SYSTEM} latest
+
+
 ARGS := $(filter-out $@,$(MAKECMDGOALS))
+
+
 
 %:
 	@:
