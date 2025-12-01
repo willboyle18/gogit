@@ -2,10 +2,11 @@ package cli
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/willboyle18/gogit/internal/commit"
 	"github.com/willboyle18/gogit/internal/index"
 	"github.com/willboyle18/gogit/internal/repo"
-	"github.com/willboyle18/gogit/internal/commit"
 )
 
 func Run(args []string){
@@ -17,6 +18,19 @@ func Run(args []string){
 	} else if args[1] == "status" {
 		index.Status()
 	} else if args[1] == "commit" {
-		commit.Commit(args)
+		if len(args) != 4 {
+			fmt.Fprintf(os.Stderr, "Incorrect arguments\n")
+			os.Exit(1)
+		}
+		if args[2] != "-m"{
+			fmt.Fprintf(os.Stderr, "No commit message written\n")
+			os.Exit(1)
+		}
+		message := commit.Check_Message_Format(args[3])
+		if message == ""{
+			fmt.Fprintf(os.Stderr, "Incorrectly formatted commit message\n")
+			os.Exit(1)
+		}
+		commit.Commit(message)
 	}
 }

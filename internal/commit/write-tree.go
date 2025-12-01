@@ -26,21 +26,21 @@ func check_valid_sha1(sha1 []byte) int {
 	return 0
 }
 
-func store_tree_object(tree_object []byte) int {
+func store_tree_object(tree_object []byte) (int, string) {
 	sha1_sum := sha1.Sum(tree_object)
 	var compressed bytes.Buffer
 	zw, err := zlib.NewWriterLevel(&compressed, zlib.BestCompression)
 	if err != nil {
-		return -1
+		return -1, ""
 	}
 
 	_, err = zw.Write(tree_object)
 	if err != nil {
-		return -1
+		return -1, ""
 	}
 
 	if err := zw.Close(); err != nil {
-		return -1
+		return -1, ""
 	}
 
 	compressed_bytes := compressed.Bytes()
@@ -53,27 +53,27 @@ func store_tree_object(tree_object []byte) int {
 
 	err = os.MkdirAll(object_dir, 0755)
 	if err != nil{
-		return -1
+		return -1, ""
 	}
 
 	object_path := filepath.Join(object_dir, file)
 
 	object_fd, err := os.Create(object_path)
 	if err != nil {
-		return -1
+		return -1, ""
 	}
 
 	_, err = object_fd.Write(compressed_bytes)
 	if err != nil{
-		return -1
+		return -1, ""
 	}
 
 
 	object_fd.Close()
-	return 0
+	return 0, sha1_hex
 }
 
-func write_tree() {
+func write_tree() string {
 	entries := cache.Read_Cache()
 	if entries <= 0 {
 		fmt.Fprintf(os.Stderr, "No file-cache to create a tree of\n")
@@ -108,5 +108,9 @@ func write_tree() {
 
 	final_buffer_bytes := final_buffer.Bytes()
 
-	store_tree_object(final_buffer_bytes)
+	result, sha1_hex := store_tree_object(final_buffer_bytes)
+	if result < 0 {
+		os.Exit(1)
+	}
+	return sha1_hex
 }
