@@ -5,6 +5,7 @@ import (
 
 	"github.com/willboyle18/gogit/internal/index"
 	"github.com/willboyle18/gogit/internal/repo"
+	"github.com/willboyle18/gogit/internal/commit"
 )
 
 func Run(args []string){
@@ -15,5 +16,7 @@ func Run(args []string){
 		index.Add(args)
 	} else if args[1] == "status" {
 		index.Status()
+	} else if args[1] == "commit" {
+		commit.Commit()
 	}
 }

@@ -227,6 +227,7 @@ func Add(args []string) {
 	entries := cache.Read_Cache()
 	if entries < 0 {
 		fmt.Fprintf(os.Stderr, "Cache currupted")
+		return
 	}
 
 	// Block 2: Create .gogit/index.lock
