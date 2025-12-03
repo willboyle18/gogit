@@ -97,6 +97,7 @@ func Checkout(commit_hash string){
 	verified := verify_hash(commit_hash)
 	if !verified {
 		fmt.Fprintf(os.Stderr, "Hash not verified\n")
+		os.Exit(1)
 	}
 	
 	files, err := os.ReadDir(".")
@@ -205,5 +206,9 @@ func Checkout(commit_hash string){
 		if index >= len(data){
 			break
 		}
+	}
+	err = os.Remove(".gogit/index")
+	if err != nil{
+		fmt.Fprintf(os.Stderr, "Failed to delete index\n")
 	}
 }
