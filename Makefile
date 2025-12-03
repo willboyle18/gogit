@@ -24,7 +24,7 @@ log: build
 	@cd ${TEST_DIRECTORY} && ../target/${BINARY_NAME}-${OPERATING_SYSTEM} log
 
 checkout: build
-	@cd ${TEST_DIRECTORY} && ../target/${BINARY_NAME}-${OPERATING_SYSTEM} checkout
+	@cd ${TEST_DIRECTORY} && ../target/${BINARY_NAME}-${OPERATING_SYSTEM} ${ARGS}
 
 
 ARGS := $(filter-out $@,$(MAKECMDGOALS))

@@ -38,6 +38,6 @@ func Run(args []string){
 	} else if args[1] == "log" {
 		commit.Log()
 	} else if args[1] == "checkout"{
-		checkout.Checkout("36575439811642605b80e23b806c1e7dfbd6f36c")
+		checkout.Checkout(args[2])
 	}
 }

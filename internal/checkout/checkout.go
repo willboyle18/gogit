@@ -3,9 +3,9 @@ package checkout
 import(
 	"fmt"
 	"os"
-	// "log"
 	"strconv"
 	"bytes"
+	"log"
 	"io"
 	"compress/zlib"
 	"path/filepath"
@@ -99,20 +99,18 @@ func Checkout(commit_hash string){
 		fmt.Fprintf(os.Stderr, "Hash not verified\n")
 	}
 	
-	// Get all project contents
-	// files, err := os.ReadDir(".")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	files, err := os.ReadDir(".")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// Remove everything expect for the gogit repo
-	// for _, file := range files {
-	// 	fmt.Println(file.Name())
-	// 	if file.Name() == ".gogit"{
-	// 		continue
-	// 	}
-	// 	os.RemoveAll(file.Name())
-	// }
+	for _, file := range files {
+		fmt.Println(file.Name())
+		if file.Name() == ".gogit"{
+			continue
+		}
+		os.RemoveAll(file.Name())
+	}
 
 	buffer := new(bytes.Buffer)
 	buffer.WriteString(commit_hash)
@@ -165,9 +163,47 @@ func Checkout(commit_hash string){
 		sha_hex := fmt.Sprintf("%x", raw_sha)
 		fmt.Println("sha1", sha_hex)
 
+		// Create the directory and file
+		directory := filepath.Dir(file)
+		file_name := filepath.Base(file)
+		err = os.MkdirAll(directory, 0750)
+		if err != nil{
+			fmt.Fprintf(os.Stderr, "Error creating directory\n")
+			os.Exit(1)
+		}
+
+		file_path := filepath.Join(directory, file_name)
+		fd, err := os.Create(file_path)
+		if err != nil{
+			fmt.Fprintf(os.Stderr, "Error creating file\n")
+			os.Exit(1)
+		}
+
+		// Decompress the file contents
+		sha_buffer = new(bytes.Buffer)
+		sha_buffer.WriteString(sha_hex)
+		raw_sha = sha_buffer.Bytes()
+		decompressed_blob, confirmed := decompress_file(raw_sha)
+		if !confirmed {
+			os.Exit(1)
+		}
+
+		// Write the decompressed contents to the file
+		start := 0
+		for decompressed_blob[start] != '\x00'{
+			start++
+		}
+		start++
+
+
+		_, err = fd.WriteString(decompressed_blob[start:])
+		if err != nil{
+			fmt.Fprintf(os.Stderr, "Failed to write to file\n")
+			os.Exit(1)
+		}
+
 		if index >= len(data){
 			break
 		}
 	}
-
 }
