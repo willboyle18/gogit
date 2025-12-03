@@ -23,6 +23,9 @@ latest: build
 log: build
 	@cd ${TEST_DIRECTORY} && ../target/${BINARY_NAME}-${OPERATING_SYSTEM} log
 
+checkout: build
+	@cd ${TEST_DIRECTORY} && ../target/${BINARY_NAME}-${OPERATING_SYSTEM} checkout
+
 
 ARGS := $(filter-out $@,$(MAKECMDGOALS))
 

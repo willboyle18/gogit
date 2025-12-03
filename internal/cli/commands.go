@@ -7,6 +7,7 @@ import (
 	"github.com/willboyle18/gogit/internal/commit"
 	"github.com/willboyle18/gogit/internal/index"
 	"github.com/willboyle18/gogit/internal/repo"
+	"github.com/willboyle18/gogit/internal/checkout"
 )
 
 func Run(args []string){
@@ -36,5 +37,7 @@ func Run(args []string){
 		commit.Latest()
 	} else if args[1] == "log" {
 		commit.Log()
+	} else if args[1] == "checkout"{
+		checkout.Checkout("36575439811642605b80e23b806c1e7dfbd6f36c")
 	}
 }
