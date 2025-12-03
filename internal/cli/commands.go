@@ -38,6 +38,10 @@ func Run(args []string){
 	} else if args[1] == "log" {
 		commit.Log()
 	} else if args[1] == "checkout"{
+		if len(args) < 3{
+			fmt.Fprintf(os.Stderr, "Not enough arguments\n")
+			os.Exit(1)
+		}
 		checkout.Checkout(args[2])
 	}
 }
