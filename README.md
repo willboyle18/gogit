@@ -6,13 +6,13 @@ This project is designed to help developers understand exactly how Git works und
 ## Features
 ### Object Database (.gogit/objects)
 The Object Database is where Git stores all of it's binary data for your repository on disk. The objects are compressed and organized by an associated SHA-1 hash.
-The structure of the object database is (first two hexadecimal digits of SHA-1 hash - this is the directory)/(last 18 digits of SHA-1 hash - file that stores the binary data of the object)
+The structure of the object database is (first two bytes of the SHA-1 hash - this is the directory)/(last 18 bytes of the SHA-1 hash - file that stores the binary data of the object)
   1. **Blob:** A blob is simply a binary blob of data that stores the contents of individual files. These files are compressed using zlib and stored in the database according to their SHA-1 hash.
-  2. **Tree**: A tree is a binary object that stores the data of a commit. It contains the file mode, name, and the SHA-1 of the blob where the data is stored.
+  2. **Tree**: A tree is a binary object that stores a snapshot of the project. It contains the file mode, name, and the SHA-1 of the blob for each file in the index.
   3. **Commit**: A commit is a binary object that stores the commit data. It contains the SHA-1 of it's associated tree, the SHA-1 of the parent (previous) commit object, and the author data.
   4. **HEAD (.gogit/HEAD)**: The HEAD is a file that contains the SHA-1 hash of the last commit. This allows us to traverse down all of our previous commits.
 ### Index (.gogit/index)
-The index is where our staging area exists in GoGit. it contains all of the file data of that project at that point in time. Every time we add files to be staged, this index gets updated before we insert them into the object database.
+The index is where our staging area exists in GoGit. It contains all of the file metadata and blob SHA1 hashes of the project at that point in time. Every time we add files to be staged, this index gets updated before we insert them into the object database.
   1. **Active Cache**: This is our way of storing files into memory to prep them to be stored into the index. Each entry on the Active Cache stores a struct that contains all the file metadata as well as it's name and SHA-1 hash.
 
 ## Commands
