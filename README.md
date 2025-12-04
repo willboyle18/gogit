@@ -27,7 +27,7 @@ The index is where our staging area exists in GoGit. it contains all of the file
 The Makefile has some commands that will easily let you setup and test out the program. Make sure to set the environemnt variables at the top with your test directory, operating system, and architecture.
   1. **reset**: Removes the .gogit folder and all of its contents from your project.
   2. **setup**: Creates the test directory within your project.
-  3. **All of the other commands except commit**: you can do any of the other commands with the Makefile with the exception of commit. To use commit please view commit__command.txt.
+  3. **All of the other commands except commit**: you can do any of the other commands with the Makefile with the exception of commit. To use commit please view **commit__command.txt**.
 
 ## License
 This project is licensed under the [MIT License](LICENSE).
