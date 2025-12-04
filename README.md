@@ -23,5 +23,11 @@ The index is where our staging area exists in GoGit. it contains all of the file
 5. **latest**: Displays the latest commit.
 6. **checkout**: Loads a specific commit and all of its file data. This commands lets you go back to how your project looked at a previous time. To use do ```checkout (tree SHA-1 of the commit you want to go back to)``` and your project will load all of the commit data from that point in time.
 
+## Makefile
+The Makefile has some commands that will easily let you setup and test out the program. Make sure to set the environemnt variables at the top with your test directory, operating system, and architecture.
+  1. **reset**: Removes the .gogit folder and all of its contents from your project.
+  2. **setup**: Creates the test directory within your project.
+  3. **All of the other commands except commit**: you can do any of the other commands with the Makefile with the exception of commit. To use commit please view commit__command.txt.
+
 ## License
 This project is licensed under the [MIT License](LICENSE).
