@@ -22,3 +22,6 @@ The index is where our staging area exists in GoGit. it contains all of the file
 4. **log**: Displays list of all commits.
 5. **latest**: Displays the latest commit.
 6. **checkout**: Loads a specific commit and all of its file data. This commands lets you go back to how your project looked at a previous time. To use do ```checkout (tree SHA-1 of the commit you want to go back to)``` and your project will load all of the commit data from that point in time.
+
+## License
+This project is licensed under the [MIT License](LICENSE).
