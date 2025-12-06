@@ -9,6 +9,8 @@ import(
 	"io"
 	"compress/zlib"
 	"path/filepath"
+
+	"github.com/willboyle18/gogit/internal/index"
 )
 
 func decompress_file(hash []byte) (string, bool) {
@@ -123,18 +125,19 @@ func Checkout(commit_hash string){
 	}
 
 	fmt.Println(data)
-	index := 0
-	for data[index] != '\x00'{
-		index++
+	index_i := 0
+	for data[index_i] != '\x00'{
+		index_i++
 	}
-	index++
+	index_i++
 
 	// Extract all files
+	args := []string{"project", "add"}
 	for {
 		mode_string := ""
-		for data[index] != ' '{
-			mode_string = mode_string + string(data[index])
-			index++
+		for data[index_i] != ' '{
+			mode_string = mode_string + string(data[index_i])
+			index_i++
 		}
 		mode, err := strconv.ParseInt(mode_string, 8, 0) 
 		if err != nil {
@@ -143,20 +146,22 @@ func Checkout(commit_hash string){
 		}
 		fmt.Println("mode", mode)
 
-		index++
+		index_i++
 		file := ""
-		for data[index] != '\x00'{
-			file = file + string(data[index])
-			index++
+		for data[index_i] != '\x00'{
+			file = file + string(data[index_i])
+			index_i++
 		}
-		index++
+		index_i++
 		fmt.Println("file", file)
+		args = append(args, file)
+
 
 		sha_buffer := new(bytes.Buffer)
 		i := 0
 		for i < 20{
-			sha_buffer.WriteByte(data[index])
-			index++
+			sha_buffer.WriteByte(data[index_i])
+			index_i++
 			i++
 		}
 
@@ -203,7 +208,7 @@ func Checkout(commit_hash string){
 			os.Exit(1)
 		}
 
-		if index >= len(data){
+		if index_i >= len(data){
 			break
 		}
 	}
@@ -211,4 +216,6 @@ func Checkout(commit_hash string){
 	if err != nil{
 		fmt.Fprintf(os.Stderr, "Failed to delete index\n")
 	}
+
+	index.Add(args)
 }
