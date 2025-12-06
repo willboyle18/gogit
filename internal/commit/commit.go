@@ -1,14 +1,14 @@
 package commit
 
 import (
+	"bytes"
+	"compress/zlib"
+	"crypto/sha1"
 	"fmt"
 	"os"
 	"os/user"
-	"bytes"
-	"time"
-	"crypto/sha1"
-	"compress/zlib"
 	"path/filepath"
+	"time"
 )
 
 func get_timestamp() string {
@@ -19,7 +19,7 @@ func get_timestamp() string {
 	_, offset_seconds := now.Zone()
 
 	sign := "+"
-	if offset_seconds < 0{
+	if offset_seconds < 0 {
 		sign = "-"
 		offset_seconds = -offset_seconds
 	}
@@ -47,7 +47,7 @@ func create_commit_object(message string, sha1_hex string) []byte {
 		os.Exit(1)
 	}
 
-	if stats.Size() > 0{
+	if stats.Size() > 0 {
 		buffer.WriteString(fmt.Sprintf("parent "))
 		parent_hash, err := os.ReadFile(".gogit/HEAD")
 		if err != nil {
@@ -59,7 +59,7 @@ func create_commit_object(message string, sha1_hex string) []byte {
 	}
 
 	user, err := user.Current()
-	if err != nil{
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error getting author info\n")
 		os.Exit(1)
 	}
@@ -67,7 +67,7 @@ func create_commit_object(message string, sha1_hex string) []byte {
 	name := user.Name
 	username := user.Username
 	hostname, err := os.Hostname()
-	if err != nil{
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error getting hostname\n")
 		os.Exit(1)
 	}
@@ -91,19 +91,19 @@ func create_commit_object(message string, sha1_hex string) []byte {
 	return final_buffer.Bytes()
 }
 
-func save_commit_object(commit_object []byte){
+func save_commit_object(commit_object []byte) {
 	sha1_sum := sha1.Sum(commit_object)
 	sha1_hex := fmt.Sprintf("%x", sha1_sum)
 
 	fd, err := os.OpenFile(".gogit/HEAD", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil{
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error accessing commit HEAD\n")
 		os.Exit(1)
 	}
 	defer fd.Close()
 
 	_, err = fd.Write([]byte(sha1_hex))
-	if err != nil{
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing SHA-1 hash to HEAD\n")
 		os.Exit(1)
 	}
@@ -142,7 +142,7 @@ func save_commit_object(commit_object []byte){
 	}
 
 	_, err = object_fd.Write(compressed_bytes)
-	if err != nil{
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing to object file\n")
 		os.Exit(1)
 	}
